@@ -1,0 +1,38 @@
+# Ignore Visual Studio temporary files, build results, and user-specific files
+.vs/
+*.user
+*.userosscache
+*.suo
+*.cache
+*.dbmdl
+*.jfm
+
+# Ignore build results
+[Bb]in/
+[Oo]bj/
+*.exe
+*.dll
+*.pdb
+*.cache
+
+# Ignore NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of PackageReference
+# Uncomment the line below if necessary
+# packages/
+
+# Ignore .NET Core build output
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+*.deps.json
+
+# Ignore Resharper, JustCode, and other temporary files
+_ReSharper.*/
+*JustCode.*
+*.bak
+
+# Ignore Node.js build artifacts
+node_modules/
+
+# Ignore macOS system files
+.DS_Store
