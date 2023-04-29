@@ -48,14 +48,31 @@ namespace ProductAPI.Controllers
             var existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Name == newProduct.Name);
 
             if (existingProduct != null)
-            {
                 return Conflict("A product with the same name already exists.");
-            }
 
             _context.Products.Add(newProduct);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProductById), new { id = newProduct.Id }, newProduct);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product updatedProduct)
+        {
+            var existingProduct = await _context.Products.FindAsync(id);
+
+            if (existingProduct == null)
+                return NotFound();
+
+            existingProduct.Name = updatedProduct.Name;
+            existingProduct.Price = updatedProduct.Price;
+            existingProduct.Available = updatedProduct.Available;
+            existingProduct.Description = updatedProduct.Description;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
