@@ -74,5 +74,21 @@ namespace ProductAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var existingProduct = await _context.Products.FindAsync(id);
+
+            if (existingProduct == null)
+                return NotFound();
+
+            _context.Products.Remove(existingProduct);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
