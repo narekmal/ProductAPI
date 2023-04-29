@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProductAPI.Controllers
 {
@@ -7,10 +8,25 @@ namespace ProductAPI.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetProducts()
+        private readonly AppDbContext _context;
+
+        public ProductsController(AppDbContext context)
         {
-            return Ok("test response");
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProducts()
+        {
+            var products = await _context.Products.Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Available,
+                p.Price
+            }).ToListAsync();
+
+            return Ok(products);
         }
     }
 }
