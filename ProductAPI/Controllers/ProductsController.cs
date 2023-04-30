@@ -113,6 +113,7 @@ namespace ProductAPI.Controllers
 
             if (!StructuralComparisons.StructuralEqualityComparer.Equals(existingProduct.RowVersion, updatedProduct.RowVersion))
             {
+                // This is the case when the product has changed since sending it to the client
                 ModelState.AddModelError("RowVersion", "The record you attempted to update was modified by another user");
                 return Conflict(ModelState);
             }
@@ -134,6 +135,7 @@ namespace ProductAPI.Controllers
 
                 if (databaseValues.RowVersion != clientValues.RowVersion)
                 {
+                    // This is the case when the product has changed since retrieving it from DB
                     ModelState.AddModelError("RowVersion", "The record you attempted to update was modified by another user");
                     return Conflict(ModelState);
                 }
