@@ -1,4 +1,6 @@
-﻿namespace ProductAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductAPI.Models
 {
     public class Product
     {
@@ -8,5 +10,7 @@
         public bool Available { get; set; }
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
     }
 }
