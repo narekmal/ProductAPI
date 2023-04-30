@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductAPI.Models;
+using System.Collections;
 
 namespace ProductAPI.Controllers
 {
@@ -65,12 +66,36 @@ namespace ProductAPI.Controllers
             if (existingProduct == null)
                 return NotFound();
 
+            if (!StructuralComparisons.StructuralEqualityComparer.Equals(existingProduct.RowVersion, updatedProduct.RowVersion))
+            {
+                ModelState.AddModelError("RowVersion", "The record you attempted to update was modified by another user");
+                return Conflict(ModelState);
+            }
+
             existingProduct.Name = updatedProduct.Name;
             existingProduct.Price = updatedProduct.Price;
             existingProduct.Available = updatedProduct.Available;
             existingProduct.Description = updatedProduct.Description;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var entry = ex.Entries.Single();
+                var databaseValues = (Product)entry.GetDatabaseValues().ToObject();
+                var clientValues = (Product)entry.Entity;
+
+                if (databaseValues.RowVersion != clientValues.RowVersion)
+                {
+                    ModelState.AddModelError("RowVersion", "The record you attempted to update was modified by another user");
+                    return Conflict(ModelState);
+                }
+
+                // If there are other concurrency conflicts not related to RowVersion, rethrow the exception.
+                throw;
+            }
 
             return NoContent();
         }
