@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using ProductAPI.Dto;
 using ProductAPI.Models;
 using System.Collections;
 
@@ -85,12 +86,21 @@ namespace ProductAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddProduct([FromBody] Product newProduct)
+        public async Task<IActionResult> AddProduct([FromBody] ProductCreateDto newProductDto)
         {
-            var existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Name == newProduct.Name);
+            var existingProduct = await _context.Products.FirstOrDefaultAsync(p => p.Name == newProductDto.Name);
 
             if (existingProduct != null)
                 return Conflict("A product with the same name already exists.");
+
+            var newProduct = new Product
+            {
+                Name = newProductDto.Name,
+                Price = newProductDto.Price,
+                Available = newProductDto.Available,
+                Description = newProductDto.Description,
+                DateCreated = DateTime.UtcNow
+            };
 
             _context.Products.Add(newProduct);
             await _context.SaveChangesAsync();
